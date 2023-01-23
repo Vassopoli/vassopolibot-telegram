@@ -2,7 +2,7 @@ package com.alivassopoli.service;
 
 import com.alivassopoli.adapter.dynamodb.ShoppingListItem;
 import com.alivassopoli.adapter.dynamodb.ShoppingListRepository;
-import com.alivassopoli.adapter.telegram.TelegramMessageSender;
+import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
 import com.alivassopoli.security.Role;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import software.amazon.awssdk.utils.StringUtils;
@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 public class ShoppingListReader implements VassopoliService {
 
     private final ShoppingListRepository shoppingListRepository;
-    private final TelegramMessageSender telegramMessageSender;
+    private final TelegramMessageCommandSender telegramMessageCommandSender;
 
-    public ShoppingListReader(final ShoppingListRepository shoppingListRepository, final TelegramMessageSender telegramMessageSender) {
+    public ShoppingListReader(final ShoppingListRepository shoppingListRepository, final TelegramMessageCommandSender telegramMessageCommandSender) {
         this.shoppingListRepository = shoppingListRepository;
-        this.telegramMessageSender = telegramMessageSender;
+        this.telegramMessageCommandSender = telegramMessageCommandSender;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ShoppingListReader implements VassopoliService {
                 .map(this::getItemNameAndPastDays)
                 .collect(Collectors.joining("\n"));
 
-        telegramMessageSender.execute(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(),
+        telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(),
                 finalMessage, true);
     }
 

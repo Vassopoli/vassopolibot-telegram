@@ -9,19 +9,19 @@ import javax.enterprise.context.ApplicationScoped;
 import java.util.Optional;
 
 @ApplicationScoped
-public class TelegramMessageSender {
+public class TelegramMessageCommandSender {
 
     private final VassopoliBotTelegramWebhook vassopoliBotTelegramWebHook;
 
-    public TelegramMessageSender(final VassopoliBotTelegramWebhook vassopoliBotTelegramWebHook) {
+    public TelegramMessageCommandSender(final VassopoliBotTelegramWebhook vassopoliBotTelegramWebHook) {
         this.vassopoliBotTelegramWebHook = vassopoliBotTelegramWebHook;
     }
 
-    public void execute(final String receiver, final String textMessage) {
-        execute(receiver, textMessage, false);
+    public void executeSend(final String receiver, final String textMessage) {
+        executeSend(receiver, textMessage, false);
     }
 
-    public void execute(final String receiver, final String textMessage, final boolean enableMarkdownV2) {
+    public void executeSend(final String receiver, final String textMessage, final boolean enableMarkdownV2) {
         final SendMessage sendMessage = SendMessage.builder()
                 .chatId(receiver)
                 .text(textMessage)
@@ -36,12 +36,12 @@ public class TelegramMessageSender {
         }
     }
 
-    public Optional<Message> execute(final Integer replyToMessage, final String receiver, final String textMessage) {
-        return execute(replyToMessage, receiver, textMessage, false);
+    public Optional<Message> executeSend(final Integer replyToMessage, final String receiver, final String textMessage) {
+        return executeSend(replyToMessage, receiver, textMessage, false);
     }
 
     //TODO: refactor
-    public Optional<Message> execute(final Integer replyToMessage, final String receiver, final String textMessage, final boolean enableMarkdownV2) {
+    public Optional<Message> executeSend(final Integer replyToMessage, final String receiver, final String textMessage, final boolean enableMarkdownV2) {
         final SendMessage sendMessage = SendMessage.builder()
                 .replyToMessageId(replyToMessage)
                 .chatId(receiver)
@@ -58,7 +58,7 @@ public class TelegramMessageSender {
         }
     }
 
-    public Optional<Boolean> execute(final String chatId, final Integer messageId) {
+    public Optional<Boolean> executeDelete(final String chatId, final Integer messageId) {
         final DeleteMessage deleteMessage = DeleteMessage.builder()
                 .chatId(chatId)
                 .messageId(messageId)

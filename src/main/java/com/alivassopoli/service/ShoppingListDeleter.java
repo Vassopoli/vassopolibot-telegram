@@ -1,7 +1,7 @@
 package com.alivassopoli.service;
 
 import com.alivassopoli.adapter.dynamodb.ShoppingListRepository;
-import com.alivassopoli.adapter.telegram.TelegramMessageSender;
+import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
 import com.alivassopoli.security.Role;
 import io.quarkus.logging.Log;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -14,11 +14,11 @@ import java.util.List;
 public class ShoppingListDeleter implements VassopoliService {
 
     private final ShoppingListRepository shoppingListRepository;
-    private final TelegramMessageSender telegramMessageSender;
+    private final TelegramMessageCommandSender telegramMessageCommandSender;
 
-    public ShoppingListDeleter(final ShoppingListRepository shoppingListRepository, final TelegramMessageSender telegramMessageSender) {
+    public ShoppingListDeleter(final ShoppingListRepository shoppingListRepository, final TelegramMessageCommandSender telegramMessageCommandSender) {
         this.shoppingListRepository = shoppingListRepository;
-        this.telegramMessageSender = telegramMessageSender;
+        this.telegramMessageCommandSender = telegramMessageCommandSender;
     }
 
     @Override
@@ -44,6 +44,6 @@ public class ShoppingListDeleter implements VassopoliService {
             message = messageSanitized + " deleted!";
         }
 
-        telegramMessageSender.execute(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), message);
+        telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), message);
     }
 }

@@ -2,7 +2,7 @@ package com.alivassopoli.service;
 
 import com.alivassopoli.adapter.dynamodb.ShoppingListItem;
 import com.alivassopoli.adapter.dynamodb.ShoppingListRepository;
-import com.alivassopoli.adapter.telegram.TelegramMessageSender;
+import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
 import com.alivassopoli.adapter.twilio.EmailSender;
 import com.alivassopoli.security.Role;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -24,16 +24,16 @@ public class ShoppingListPrinter implements VassopoliService {
     private final String printerEmail;
     private final ShoppingListRepository shoppingListRepository;
     private final EmailSender emailSender;
-    private final TelegramMessageSender telegramMessageSender;
+    private final TelegramMessageCommandSender telegramMessageCommandSender;
 
     public ShoppingListPrinter(@ConfigProperty(name = "vassopolibot-telegram-webhook.printer.email") final String printerEmail,
                                final ShoppingListRepository shoppingListRepository,
                                final EmailSender emailSender,
-                               final TelegramMessageSender telegramMessageSender) {
+                               final TelegramMessageCommandSender telegramMessageCommandSender) {
         this.printerEmail = printerEmail;
         this.shoppingListRepository = shoppingListRepository;
         this.emailSender = emailSender;
-        this.telegramMessageSender = telegramMessageSender;
+        this.telegramMessageCommandSender = telegramMessageCommandSender;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ShoppingListPrinter implements VassopoliService {
         LOG.info("ShoppingListPrinter - sending email...");
         emailSender.execute(printerEmail, html); //TODO: email could be async
 
-        telegramMessageSender.execute(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), "Sent to printer!");
+        telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), "Sent to printer!");
     }
 
     private String getElementFormatted(final ShoppingListItem element) {
