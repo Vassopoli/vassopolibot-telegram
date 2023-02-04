@@ -68,12 +68,15 @@ public class CommandParser {
             }
         }, () -> {
             if (!Role.UNKNOWN.equals(userRole)) {
-                telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), "Intention of message \"" + update.getMessage().getText() + "\" from chat " + getChatTitleOrUsername(update.getMessage().getChat()) + " was not recognized!");
+                telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), "Intention of message \"" + update.getMessage().getText() + "\" from chat " + getChatTitleOrUsernameOrFirstName(update.getMessage().getChat()) + " was not recognized!");
             }
         });
     }
 
-    private String getChatTitleOrUsername(final Chat chat) {
-        return Objects.requireNonNullElse(chat.getTitle(), chat.getUserName());
+    private String getChatTitleOrUsernameOrFirstName(final Chat chat) {
+        //TODO: Refactor, and use across application when a username is needed
+        //TODO: on top of all, get alias from database of roles
+        return Objects.requireNonNullElse(
+                chat.getTitle(), Objects.requireNonNullElse(chat.getUserName(), chat.getFirstName()));
     }
 }

@@ -34,7 +34,7 @@ public class ShoppingListCreator implements VassopoliService {
     } //TODO: Estruturar de tal forma que fique tudo debaixo de um dominio, como de market neste caso
 
     @Override
-    public void execute(Update update) {
+    public void execute(final Update update) {
         final String messageSanitized = update.getMessage().getText().toLowerCase().replace("market add ", "");
         final Stream<String> streamOfItems = Arrays.stream(messageSanitized.split(","));
 
