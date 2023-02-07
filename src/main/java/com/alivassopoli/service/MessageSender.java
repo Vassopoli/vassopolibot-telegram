@@ -2,6 +2,7 @@ package com.alivassopoli.service;
 
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
 import com.alivassopoli.security.Role;
+import com.alivassopoli.util.GetTelegramSenderName;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -37,7 +38,7 @@ public class MessageSender implements VassopoliService {
     @Override
     public void execute(final Update update) {
         final String messageSanitized = update.getMessage().getText().toLowerCase().replace("message vassopoli ", "");
-        final String finalMessage = "Message from " + update.getMessage().getFrom().getUserName() + ":\n\n" + messageSanitized;
+        final String finalMessage = "Message from " + GetTelegramSenderName.execute(update.getMessage()) + ":\n\n" + messageSanitized;
 
         telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), finalMessage);
         telegramMessageCommandSender.executeSend(String.valueOf(vassopoliBackupID), finalMessage);

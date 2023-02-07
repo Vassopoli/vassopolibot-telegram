@@ -5,16 +5,15 @@ import com.alivassopoli.security.Role;
 import com.alivassopoli.security.UserAuthenticator;
 import com.alivassopoli.service.VassopoliService;
 import com.alivassopoli.service.VassopoliServiceFactory;
+import com.alivassopoli.util.GetTelegramSenderName;
 import io.quarkus.logging.Log;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -68,15 +67,8 @@ public class CommandParser {
             }
         }, () -> {
             if (!Role.UNKNOWN.equals(userRole)) {
-                telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), "Intention of message \"" + update.getMessage().getText() + "\" from chat " + getChatTitleOrUsernameOrFirstName(update.getMessage().getChat()) + " was not recognized!");
+                telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), "Intention of message \"" + update.getMessage().getText() + "\" on chat " + update.getMessage().getChat().getTitle() + " from user " + GetTelegramSenderName.execute(update.getMessage()) + " was not recognized!");
             }
         });
-    }
-
-    private String getChatTitleOrUsernameOrFirstName(final Chat chat) {
-        //TODO: Refactor, and use across application when a username is needed
-        //TODO: on top of all, get alias from database of roles
-        return Objects.requireNonNullElse(
-                chat.getTitle(), Objects.requireNonNullElse(chat.getUserName(), chat.getFirstName()));
     }
 }

@@ -16,10 +16,12 @@ public class VassopoliServiceFactory {
     private static final Logger LOG = Logger.getLogger(VassopoliServiceFactory.class);
 
     private final Instance<VassopoliService> vassopoliServiceList;
+    private final MessageSender fallbackService;
 
-    public VassopoliServiceFactory(final Instance<VassopoliService> vassopoliServiceList) {
+    public VassopoliServiceFactory(final Instance<VassopoliService> vassopoliServiceList, final MessageSender messageSender) {
         validateCommandUniqueness(vassopoliServiceList);
         this.vassopoliServiceList = vassopoliServiceList;
+        this.fallbackService = messageSender;
     }
 
     public Optional<VassopoliService> execute(final String textMessage) {
@@ -30,10 +32,11 @@ public class VassopoliServiceFactory {
 
         if (vassopoliServiceOptional.isPresent()) {
             LOG.infof("User intention is %s", vassopoliServiceOptional.get().getClass().getSimpleName());
+            return vassopoliServiceOptional;
         } else {
-            LOG.errorf("User intention could not be identified for message %s", textMessage);
+            LOG.infof("User intention could not be identified for message %s", textMessage);
+            return Optional.of(fallbackService);
         }
-        return vassopoliServiceOptional;
     }
 
     private boolean doesMessageStartsWithValuesFromCommandList(final String textMessage, final VassopoliService i) {
