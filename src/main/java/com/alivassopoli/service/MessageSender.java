@@ -27,7 +27,7 @@ public class MessageSender implements VassopoliService {
 
     @Override
     public Role getRequiredRole() {
-        return Role.USER;
+        return Role.UNKNOWN;
     }
 
     @Override

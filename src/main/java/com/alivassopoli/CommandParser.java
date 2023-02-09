@@ -63,7 +63,7 @@ public class CommandParser {
                 receivedMessageOptional.ifPresent(m -> telegramMessageCommandSender.executeDelete(m.getChatId().toString(), m.getMessageId()));
 
             } else {
-                LOG.infof("%s %s not allowed to perform %s %s", userRole, update.getMessage().getFrom().getUserName(), vassopoliService.getRequiredRole(), vassopoliService.getRequiredRole());
+                LOG.infof("%s of role %s not allowed to execute service of %s role", update.getMessage().getFrom().getUserName(), userRole, vassopoliService.getRequiredRole());
             }
         }, () -> {
             if (!Role.UNKNOWN.equals(userRole)) {
