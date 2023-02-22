@@ -2,6 +2,7 @@ package com.alivassopoli.security;
 
 public enum Policy {
 
+    FIRST_GREETING_SENDER,
     INSTAGRAM_SAVER,
     MESSAGE_SENDER,
     SHOPPING_LIST_CREATOR,
