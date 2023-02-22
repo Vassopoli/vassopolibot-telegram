@@ -4,7 +4,7 @@ import com.alivassopoli.adapter.dynamodb.ShoppingListItem;
 import com.alivassopoli.adapter.dynamodb.ShoppingListRepository;
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
 import com.alivassopoli.adapter.twilio.EmailSender;
-import com.alivassopoli.security.Role;
+import com.alivassopoli.security.Policy;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -37,8 +37,8 @@ public class ShoppingListPrinter implements VassopoliService {
     }
 
     @Override
-    public Role getRequiredRole() {
-        return Role.USER;
+    public Policy getRequiredPolicy() {
+        return Policy.SHOPPING_LIST_PRINTER;
     }
 
     @Override

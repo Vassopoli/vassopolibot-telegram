@@ -2,7 +2,7 @@ package com.alivassopoli.service;
 
 import com.alivassopoli.adapter.dynamodb.ShoppingListRepository;
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
-import com.alivassopoli.security.Role;
+import com.alivassopoli.security.Policy;
 import io.quarkus.logging.Log;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
@@ -22,8 +22,8 @@ public class ShoppingListDeleter implements VassopoliService {
     }
 
     @Override
-    public Role getRequiredRole() {
-        return Role.USER;
+    public Policy getRequiredPolicy() {
+        return Policy.SHOPPING_LIST_DELETER;
     }
 
     @Override

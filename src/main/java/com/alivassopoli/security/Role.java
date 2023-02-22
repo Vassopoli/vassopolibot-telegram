@@ -1,22 +1,24 @@
 package com.alivassopoli.security;
 
+import java.util.Set;
+
+import static com.alivassopoli.security.Policy.*;
+
 public enum Role {
 
-    //TODO: Change this numerical logic to a logic of many roles per user
-    // Admin ->
-    // - All
-    // User ->
-    // Unknown ->
-    // - None
-    ADMIN(3), USER(2), UNKNOWN(1);
+    //TODO: Move this hardcode to a database
+    ADMIN(Set.of(INSTAGRAM_SAVER, MESSAGE_SENDER, SHOPPING_LIST_CREATOR, SHOPPING_LIST_DELETER, SHOPPING_LIST_PRINTER, SHOPPING_LIST_READER)),
+    USER(Set.of(Policy.MESSAGE_SENDER, SHOPPING_LIST_CREATOR, SHOPPING_LIST_DELETER, SHOPPING_LIST_PRINTER, SHOPPING_LIST_READER)),
+    APTO(Set.of(SHOPPING_LIST_CREATOR, SHOPPING_LIST_DELETER, SHOPPING_LIST_PRINTER, SHOPPING_LIST_READER)),
+    UNKNOWN(Set.of(Policy.MESSAGE_SENDER));
 
-    private final int code;
+    private final Set<Policy> policySet;
 
-    Role(final int code) {
-        this.code = code;
+    Role(final Set<Policy> policySet) {
+        this.policySet = policySet;
     }
 
-    public int getCode() {
-        return code;
+    public Set<Policy> getPolicySet() {
+        return policySet;
     }
 }

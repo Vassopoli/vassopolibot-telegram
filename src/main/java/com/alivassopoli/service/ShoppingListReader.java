@@ -3,7 +3,7 @@ package com.alivassopoli.service;
 import com.alivassopoli.adapter.dynamodb.ShoppingListItem;
 import com.alivassopoli.adapter.dynamodb.ShoppingListRepository;
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
-import com.alivassopoli.security.Role;
+import com.alivassopoli.security.Policy;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import software.amazon.awssdk.utils.StringUtils;
 
@@ -26,8 +26,8 @@ public class ShoppingListReader implements VassopoliService {
     }
 
     @Override
-    public Role getRequiredRole() {
-        return Role.USER;
+    public Policy getRequiredPolicy() {
+        return Policy.SHOPPING_LIST_READER;
     }
 
     @Override

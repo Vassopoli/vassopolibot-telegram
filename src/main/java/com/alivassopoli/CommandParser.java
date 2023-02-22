@@ -42,7 +42,7 @@ public class CommandParser {
         final Role userRole = userAuthenticator.getChatRole(update.getMessage().getChatId());
 
         vassopoliServiceOptional.ifPresentOrElse(vassopoliService -> {
-            if (userRole.getCode() >= vassopoliService.getRequiredRole().getCode()) {
+            if (userRole.getPolicySet().contains(vassopoliService.getRequiredPolicy())) {
 
                 final String cacheKey = update.getMessage().getChatId().toString() + vassopoliService.getClass().getSimpleName();
                 final boolean wasFirstTimeAddedToCache = invocationCache.add(cacheKey);
@@ -57,13 +57,13 @@ public class CommandParser {
                     receivedMessageOptional = Optional.empty();
                 }
 
-                LOG.infof("%s %s performing %s %s", userRole, update.getMessage().getFrom().getUserName(), vassopoliService.getRequiredRole(), vassopoliService.getClass().getSimpleName());
+                LOG.infof("%s of role %s performing service %s of %s policy", update.getMessage().getFrom().getUserName(), userRole, vassopoliService.getClass().getSimpleName(), vassopoliService.getRequiredPolicy());
                 vassopoliService.execute(update);
 
                 receivedMessageOptional.ifPresent(m -> telegramMessageCommandSender.executeDelete(m.getChatId().toString(), m.getMessageId()));
 
             } else {
-                LOG.infof("%s of role %s not allowed to execute service of %s role", update.getMessage().getFrom().getUserName(), userRole, vassopoliService.getRequiredRole());
+                LOG.infof("%s of role %s not allowed to execute service %s of %s policy", update.getMessage().getFrom().getUserName(), userRole, vassopoliService.getClass().getSimpleName(), vassopoliService.getRequiredPolicy());
             }
         }, () -> {
             if (!Role.UNKNOWN.equals(userRole)) {

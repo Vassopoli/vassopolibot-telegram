@@ -1,7 +1,7 @@
 package com.alivassopoli.service;
 
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
-import com.alivassopoli.security.Role;
+import com.alivassopoli.security.Policy;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -30,8 +30,8 @@ public class MessageSender implements VassopoliService {
     }
 
     @Override
-    public Role getRequiredRole() {
-        return Role.UNKNOWN;
+    public Policy getRequiredPolicy() {
+        return Policy.MESSAGE_SENDER;
     }
 
     @Override

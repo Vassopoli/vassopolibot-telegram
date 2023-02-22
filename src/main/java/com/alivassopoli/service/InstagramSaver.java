@@ -1,7 +1,7 @@
 package com.alivassopoli.service;
 
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
-import com.alivassopoli.security.Role;
+import com.alivassopoli.security.Policy;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -17,8 +17,8 @@ public class InstagramSaver implements VassopoliService {
     }
 
     @Override
-    public Role getRequiredRole() {
-        return Role.ADMIN;
+    public Policy getRequiredPolicy() {
+        return Policy.INSTAGRAM_SAVER;
     }
 
     @Override
