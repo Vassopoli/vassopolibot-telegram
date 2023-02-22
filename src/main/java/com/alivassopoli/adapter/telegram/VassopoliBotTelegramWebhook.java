@@ -20,12 +20,18 @@ public class VassopoliBotTelegramWebhook extends TelegramWebhookBot {
     private final String token;
     private final UserAuthenticator userAuthenticator;
     private final CommandParser commandParser;
+    private final TelegramMessageCommandSender telegramMessageCommandSender;
+    private final Long vassopoliID;
 
     public VassopoliBotTelegramWebhook(@ConfigProperty(name = "vassopolibot-telegram-webhook.telegram.token") final String token,
-                                       final UserAuthenticator userAuthenticator, final CommandParser commandParser) {
+                                       final UserAuthenticator userAuthenticator, final CommandParser commandParser,
+                                       final TelegramMessageCommandSender telegramMessageCommandSender,
+                                       @ConfigProperty(name = "vassopolibot-telegram-webhook.telegram.vassopoli-id") final Long vassopoliID) {
         this.token = token;
         this.userAuthenticator = userAuthenticator;
         this.commandParser = commandParser;
+        this.telegramMessageCommandSender = telegramMessageCommandSender;
+        this.vassopoliID = vassopoliID;
     }
 
     @Override
@@ -40,15 +46,36 @@ public class VassopoliBotTelegramWebhook extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(final Update update) {
-        //TODO: create a flow for forbidden users, null updates, updates without a message, and messages without text (THE ELSE OF THIS IF)
-        if (isProcessableMessage(update)) {
-            final Role role = userAuthenticator.getChatRole(update.getMessage().getChatId());
-            LOG.infof("Message from %s %s received", role.toString(), update.getMessage().getFrom().getUserName());
-            LOG.info(update.getMessage());
+        try {
+            //TODO: create a flow for forbidden users, null updates, updates without a message, and messages without text (THE ELSE OF THIS IF)
 
-            //TODO: Send to command-parser lambda
-            // or use strategy and extract user intention in functional way, with return
-            commandParser.execute(update);
+            LOG.info("Some message received");
+            LOG.info(update);
+
+            if (isProcessableMessage(update)) {
+                final Role role = userAuthenticator.getChatRole(update.getMessage().getChatId());
+                LOG.infof("Message from %s of role %s", update.getMessage().getFrom().getUserName(), role.toString());
+                LOG.info(update.getMessage());
+
+                if (update.getMessage().hasPhoto()) {
+                    LOG.info("Photo is being processed");
+                    telegramMessageCommandSender.executeForward(String.valueOf(vassopoliID), update.getMessage().getChatId(), update.getMessage().getMessageId());
+
+                } else if (update.getMessage().hasText()) {
+                    LOG.info("Text is being processed");
+                    //Even if it's a photo with caption, will not enter here
+
+                    //TODO: Send to command-parser lambda
+                    // or use strategy and extract user intention in functional way, with return
+                    commandParser.execute(update, role);
+                }
+            } else {
+                LOG.warn("Message was no processed properly because it's not processable");
+                telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), "Message was no processed properly because it's not processable");
+            }
+        } catch (Exception ex) {
+            LOG.error("Message was no processed properly due to an exception", ex);
+            telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), "Message was no processed properly due to an exception: " + ex.getMessage());
         }
         return null;
     }
@@ -59,6 +86,6 @@ public class VassopoliBotTelegramWebhook extends TelegramWebhookBot {
     }
 
     private boolean isProcessableMessage(Update update) {
-        return Objects.nonNull(update) && update.hasMessage() && update.getMessage().hasText();
+        return Objects.nonNull(update) && update.hasMessage();
     }
 }

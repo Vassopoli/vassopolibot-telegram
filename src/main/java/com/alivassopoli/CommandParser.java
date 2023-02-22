@@ -2,12 +2,9 @@ package com.alivassopoli;
 
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
 import com.alivassopoli.security.Role;
-import com.alivassopoli.security.UserAuthenticator;
 import com.alivassopoli.service.VassopoliService;
 import com.alivassopoli.service.VassopoliServiceFactory;
-import com.alivassopoli.util.GetTelegramSenderName;
 import io.quarkus.logging.Log;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -23,26 +20,18 @@ public class CommandParser {
 
     private final Set<String> invocationCache = new HashSet<>();
     private final VassopoliServiceFactory vassopoliServiceFactory;
-    private final UserAuthenticator userAuthenticator;
     private final TelegramMessageCommandSender telegramMessageCommandSender;
-    private final Long vassopoliID;
 
-    public CommandParser(final VassopoliServiceFactory vassopoliServiceFactory, final UserAuthenticator userAuthenticator,
-                         final TelegramMessageCommandSender telegramMessageCommandSender,
-                         @ConfigProperty(name = "vassopolibot-telegram-webhook.telegram.vassopoli-id") final Long vassopoliID) {
+    public CommandParser(final VassopoliServiceFactory vassopoliServiceFactory,
+                         final TelegramMessageCommandSender telegramMessageCommandSender) {
         this.vassopoliServiceFactory = vassopoliServiceFactory;
-        this.userAuthenticator = userAuthenticator;
         this.telegramMessageCommandSender = telegramMessageCommandSender;
-        this.vassopoliID = vassopoliID;
     }
 
-    public void execute(final Update update) {
-        final Optional<VassopoliService> vassopoliServiceOptional = vassopoliServiceFactory.execute(update.getMessage().getText());
+    public void execute(final Update update, final Role role) {
+        final VassopoliService vassopoliService = vassopoliServiceFactory.execute(update.getMessage().getText());
 
-        final Role userRole = userAuthenticator.getChatRole(update.getMessage().getChatId());
-
-        vassopoliServiceOptional.ifPresentOrElse(vassopoliService -> {
-            if (userRole.getPolicySet().contains(vassopoliService.getRequiredPolicy())) {
+            if (role.getPolicySet().contains(vassopoliService.getRequiredPolicy())) {
 
                 final String cacheKey = update.getMessage().getChatId().toString() + vassopoliService.getClass().getSimpleName();
                 final boolean wasFirstTimeAddedToCache = invocationCache.add(cacheKey);
@@ -57,18 +46,13 @@ public class CommandParser {
                     receivedMessageOptional = Optional.empty();
                 }
 
-                LOG.infof("%s of role %s performing service %s of %s policy", update.getMessage().getFrom().getUserName(), userRole, vassopoliService.getClass().getSimpleName(), vassopoliService.getRequiredPolicy());
+                LOG.infof("%s of role %s performing service %s of %s policy", update.getMessage().getFrom().getUserName(), role, vassopoliService.getClass().getSimpleName(), vassopoliService.getRequiredPolicy());
                 vassopoliService.execute(update);
 
                 receivedMessageOptional.ifPresent(m -> telegramMessageCommandSender.executeDelete(m.getChatId().toString(), m.getMessageId()));
 
             } else {
-                LOG.infof("%s of role %s not allowed to execute service %s of %s policy", update.getMessage().getFrom().getUserName(), userRole, vassopoliService.getClass().getSimpleName(), vassopoliService.getRequiredPolicy());
+                LOG.infof("%s of role %s not allowed to execute service %s of %s policy", update.getMessage().getFrom().getUserName(), role, vassopoliService.getClass().getSimpleName(), vassopoliService.getRequiredPolicy());
             }
-        }, () -> {
-            if (!Role.UNKNOWN.equals(userRole)) {
-                telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), "Intention of message \"" + update.getMessage().getText() + "\" on chat " + update.getMessage().getChat().getTitle() + " from user " + GetTelegramSenderName.execute(update.getMessage()) + " was not recognized!");
-            }
-        });
     }
 }

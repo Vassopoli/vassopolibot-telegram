@@ -1,5 +1,6 @@
 package com.alivassopoli.adapter.telegram;
 
+import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -54,6 +55,20 @@ public class TelegramMessageCommandSender {
             return Optional.of(vassopoliBotTelegramWebHook.execute(sendMessage));
         } catch (TelegramApiException e) {
             e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Message> executeForward(final String receiver, final Long fromChatId, final Integer messageId) {
+        final ForwardMessage forwardMessage = ForwardMessage.builder()
+                .chatId(receiver)
+                .fromChatId(fromChatId)
+                .messageId(messageId)
+                .build();
+
+        try {
+            return Optional.of(vassopoliBotTelegramWebHook.execute(forwardMessage));
+        } catch (Exception ex) {
             return Optional.empty();
         }
     }

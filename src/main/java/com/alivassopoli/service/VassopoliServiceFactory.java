@@ -6,7 +6,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.function.Predicate.not;
@@ -24,19 +23,17 @@ public class VassopoliServiceFactory {
         this.fallbackService = messageSender;
     }
 
-    public Optional<VassopoliService> execute(final String textMessage) {
-        final Optional<VassopoliService> vassopoliServiceOptional = vassopoliServiceList
+    public VassopoliService execute(final String textMessage) {
+        final VassopoliService vassopoliService = vassopoliServiceList
                 .stream()
                 .filter(s -> doesMessageStartsWithValuesFromCommandList(textMessage, s))
-                .findFirst();
+                .findFirst().orElseGet(() -> {
+                    LOG.infof("User intention could not be identified for message %s. Setting default to %s", textMessage, fallbackService.getClass().getSimpleName());
+                    return fallbackService;
+                });
 
-        if (vassopoliServiceOptional.isPresent()) {
-            LOG.infof("User intention is %s", vassopoliServiceOptional.get().getClass().getSimpleName());
-            return vassopoliServiceOptional;
-        } else {
-            LOG.infof("User intention could not be identified for message %s", textMessage);
-            return Optional.of(fallbackService);
-        }
+            LOG.infof("User intention is %s", vassopoliService.getClass().getSimpleName());
+            return vassopoliService;
     }
 
     private boolean doesMessageStartsWithValuesFromCommandList(final String textMessage, final VassopoliService i) {
