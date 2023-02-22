@@ -32,7 +32,7 @@ public class ShoppingListReader implements VassopoliService {
 
     @Override
     public List<String> getCommand() {
-        return List.of("market get");
+        return List.of("market get", "/marketget");
     }
 
     @Override
