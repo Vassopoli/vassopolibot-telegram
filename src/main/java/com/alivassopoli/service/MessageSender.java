@@ -9,8 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @ApplicationScoped
 public class MessageSender implements VassopoliService {
@@ -44,42 +42,29 @@ public class MessageSender implements VassopoliService {
         final String messageSanitized = update.getMessage().getText().toLowerCase().replace("message ", "");
 
         if (isMessageFromVassopoli((update.getMessage()))) {
+            LOG.info("Vassopoli sending message to someone");
 
             if (update.getMessage().isReply()) {
-                // Replies doest need to know the receiver
+                // Replies doest need to get the receiver from message command
 
-                final String messageReplied = update.getMessage().getReplyToMessage().getText();
-                final Pattern p = Pattern.compile("chatId: (.*)");
-                final Matcher m = p.matcher(messageReplied);
+                final Message messageReplied = update.getMessage().getReplyToMessage();
+                final Long forwardFromUserId = messageReplied.getForwardFrom().getId();
 
-                if (m.find()){
-                    final String chatId = m.group(1);
-                    LOG.infof("chatId %s found on message replied", chatId);
-                    telegramMessageCommandSender.executeSend(chatId, messageSanitized);
+                 telegramMessageCommandSender.executeSend(forwardFromUserId.toString(), messageSanitized);
 
-                    telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(),
-                            "\uD83E\uDD16 Message sent!");
-                } else {
-                    LOG.errorf("chatId not found on message %s", messageReplied);
-                }
-
+                telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(),
+                        "\uD83E\uDD16 Message sent!");
 
             } else {
-                // Otherwise, it needs the receiver
+                // Otherwise, it needs the receiver on the message command
+                throw new UnsupportedOperationException("Not implemented yet");
             }
 
         } else {
-            final String messageWithAdministrativeDetails = "Message from\n\n"
-                    + "chatId: " + update.getMessage().getChatId() + "\n"
-                    + "chatName: " + update.getMessage().getChat().getTitle() + "\n"
-                    + "userId: " + update.getMessage().getFrom().getId() + "\n"
-                    + "databaseUserNameAlias: " + null + "\n"
-                    + "userName: " + update.getMessage().getFrom().getUserName() + "\n"
-                    + "firstName: " + update.getMessage().getFrom().getFirstName() + "\n\n"
-                    + messageSanitized;
+            LOG.info("Someone sending message to Vassopoli");
 
-            telegramMessageCommandSender.executeSend(String.valueOf(vassopoliID), messageWithAdministrativeDetails);
-            telegramMessageCommandSender.executeSend(String.valueOf(vassopoliBackupID), messageWithAdministrativeDetails);
+            telegramMessageCommandSender.executeForward(String.valueOf(vassopoliID), update.getMessage().getChatId(), update.getMessage().getMessageId());
+            telegramMessageCommandSender.executeForward(String.valueOf(vassopoliBackupID), update.getMessage().getChatId(), update.getMessage().getMessageId());
 
             telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(),
                     "\uD83E\uDD16 Message sent!");
