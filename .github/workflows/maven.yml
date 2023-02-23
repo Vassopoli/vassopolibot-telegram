@@ -15,6 +15,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Add mask
+      run: echo "::add-mask::${{ secrets.APP_BASE_URL }}"
+
     - uses: actions/checkout@v3
     
     - name: Set up JDK 11
