@@ -22,16 +22,19 @@ public class VassopoliBotTelegramWebhook extends TelegramWebhookBot {
     private final CommandParser commandParser;
     private final TelegramMessageCommandSender telegramMessageCommandSender;
     private final Long vassopoliID;
+    private final Long vassopoliBackupID;
 
     public VassopoliBotTelegramWebhook(@ConfigProperty(name = "vassopolibot-telegram-webhook.telegram.token") final String token,
                                        final UserAuthenticator userAuthenticator, final CommandParser commandParser,
                                        final TelegramMessageCommandSender telegramMessageCommandSender,
-                                       @ConfigProperty(name = "vassopolibot-telegram-webhook.telegram.vassopoli-id") final Long vassopoliID) {
+                                       @ConfigProperty(name = "vassopolibot-telegram-webhook.telegram.vassopoli-id") final Long vassopoliID,
+                                       @ConfigProperty(name = "vassopolibot-telegram-webhook.telegram.vassopoli-backup-id") final Long vassopoliBackupID) {
         this.token = token;
         this.userAuthenticator = userAuthenticator;
         this.commandParser = commandParser;
         this.telegramMessageCommandSender = telegramMessageCommandSender;
         this.vassopoliID = vassopoliID;
+        this.vassopoliBackupID = vassopoliBackupID;
     }
 
     @Override
@@ -60,6 +63,7 @@ public class VassopoliBotTelegramWebhook extends TelegramWebhookBot {
                 if (update.getMessage().hasPhoto()) {
                     LOG.info("Photo is being processed");
                     telegramMessageCommandSender.executeForward(String.valueOf(vassopoliID), update.getMessage().getChatId(), update.getMessage().getMessageId());
+                    telegramMessageCommandSender.executeForward(String.valueOf(vassopoliBackupID), update.getMessage().getChatId(), update.getMessage().getMessageId());
 
                 } else if (update.getMessage().hasText()) {
                     LOG.info("Text is being processed");
