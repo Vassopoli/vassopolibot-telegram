@@ -60,8 +60,19 @@ public class VassopoliBotTelegramWebhook extends TelegramWebhookBot {
                 LOG.infof("Message from %s of role %s", update.getMessage().getFrom().getUserName(), role.toString());
                 LOG.info(update.getMessage());
 
+                //TODO: implement strategy
                 if (update.getMessage().hasPhoto()) {
                     LOG.info("Photo is being processed");
+                    telegramMessageCommandSender.executeForward(String.valueOf(vassopoliID), update.getMessage().getChatId(), update.getMessage().getMessageId());
+                    telegramMessageCommandSender.executeForward(String.valueOf(vassopoliBackupID), update.getMessage().getChatId(), update.getMessage().getMessageId());
+
+                } else if (update.getMessage().hasVideo()) {
+                    LOG.info("Video is being processed");
+                    telegramMessageCommandSender.executeForward(String.valueOf(vassopoliID), update.getMessage().getChatId(), update.getMessage().getMessageId());
+                    telegramMessageCommandSender.executeForward(String.valueOf(vassopoliBackupID), update.getMessage().getChatId(), update.getMessage().getMessageId());
+
+                } else if (update.getMessage().hasAudio()) {
+                    LOG.info("Audio is being processed");
                     telegramMessageCommandSender.executeForward(String.valueOf(vassopoliID), update.getMessage().getChatId(), update.getMessage().getMessageId());
                     telegramMessageCommandSender.executeForward(String.valueOf(vassopoliBackupID), update.getMessage().getChatId(), update.getMessage().getMessageId());
 
