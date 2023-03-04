@@ -58,7 +58,7 @@ public class ShoppingListReader implements VassopoliService {
         final LocalDate today = LocalDate.now();
         final long diffInDays = Duration.between(LocalDate.parse(shoppingListItem.getCreatedAt()).atStartOfDay(), today.atStartOfDay()).toDays();
 
-        return "\uD83D\uDED2 *" + StringUtils.capitalize(shoppingListItem.getItem()) + "*\n⏳ " + daysAgo(diffInDays) + "\n\\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\-";
+        return "\uD83D\uDED2 *" + StringUtils.capitalize(escapeEspecialCharacters(shoppingListItem.getItem())) + "*\n⏳ " + daysAgo(diffInDays) + "\n\\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\- \\-";
     }
 
     private String daysAgo(final long diffInDays) {
@@ -69,5 +69,29 @@ public class ShoppingListReader implements VassopoliService {
         } else {
             return diffInDays + " days ago";
         }
+    }
+
+    //TODO: move to another place
+    //TODO: make code dynamic
+    private String escapeEspecialCharacters(final String message) {
+        return message
+                .replace("_", "\\_")
+                .replace("*", "\\*")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace("(", "\\(")
+                .replace(")", "\\)")
+                .replace("~", "\\~")
+                .replace("`", "\\`")
+                .replace(">", "\\>")
+                .replace("#", "\\#")
+                .replace("+", "\\+")
+                .replace("-", "\\-")
+                .replace("=", "\\=")
+                .replace("|", "\\|")
+                .replace("{", "\\{")
+                .replace("}", "\\}")
+                .replace(".", "\\.")
+                .replace("!", "\\!");
     }
 }
