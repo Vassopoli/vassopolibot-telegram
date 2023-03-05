@@ -13,6 +13,8 @@ import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -51,7 +53,14 @@ public class ShoppingListPrinter implements VassopoliService {
         LOG.info("ShoppingListPrinter - execute");
         final List<ShoppingListItem> shoppingList = shoppingListRepository.findAll();
 
-        final String html = getTemplateFormatted(shoppingList);
+        final Comparator<ShoppingListItem> compareByCreatedAt = Comparator.comparing(x -> LocalDate.parse(x.getCreatedAt()));
+
+        final Comparator<ShoppingListItem> compareByItem = Comparator.comparing(ShoppingListItem::getItem);
+
+        final Comparator<ShoppingListItem> compare = compareByCreatedAt.reversed().thenComparing(compareByItem);
+
+        final String html = getTemplateFormatted(shoppingList.stream()
+                .sorted(compare).collect(Collectors.toList()));
 
         LOG.info("ShoppingListPrinter - sending email...");
         emailSender.execute(printerEmail, html); //TODO: email could be async
