@@ -25,7 +25,7 @@ public class UserAuthenticator {
         final Map<Long, Role> idToRole = Map.of(
                 vassopoliID, Role.ADMIN,
                 vassopoliBackupID, Role.USER,
-                aptoID, Role.APTO
+                aptoID, Role.USER
         );
 
         return idToRole.getOrDefault(chatID, Role.UNKNOWN);
