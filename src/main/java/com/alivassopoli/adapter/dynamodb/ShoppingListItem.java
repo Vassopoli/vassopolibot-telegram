@@ -12,16 +12,18 @@ public class ShoppingListItem {
     private String item;
     private String category;
     private String ownerTelegramChatId;
+    private String ownerTelegramChatName;
     private String createdAt;
 
     public ShoppingListItem() {
 
     }
 
-    public ShoppingListItem(String item, String category, String ownerTelegramChatId, String createdAt) {
+    public ShoppingListItem(String item, String category, String ownerTelegramChatId, String ownerTelegramChatName, String createdAt) {
         this.item = item;
         this.category = category;
         this.ownerTelegramChatId = ownerTelegramChatId;
+        this.ownerTelegramChatName = ownerTelegramChatName;
         this.createdAt = createdAt;
     }
 
@@ -31,6 +33,12 @@ public class ShoppingListItem {
             fruit.setItem(item.get(AbstractShoppingListRepository.SHOPPING_LIST_ITEM_COL).s());
             fruit.setCategory(item.get(AbstractShoppingListRepository.SHOPPING_LIST_CATEGORY_COL).s());
             fruit.setOwnerTelegramChatId(item.get(AbstractShoppingListRepository.SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL).s());
+
+            //NULLABLE
+            final AttributeValue ownerTelegramChatName = item.get(AbstractShoppingListRepository.SHOPPING_LIST_OWNER_TELEGRAM_CHAT_NAME_COL);
+            if (Objects.nonNull(ownerTelegramChatName)) {
+                fruit.setOwnerTelegramChatName(ownerTelegramChatName.s());
+            }
 
             //NULLABLE
             final AttributeValue createdAt = item.get(AbstractShoppingListRepository.SHOPPING_LIST_CREATEDAT_COL);
@@ -63,6 +71,14 @@ public class ShoppingListItem {
 
     public void setOwnerTelegramChatId(String ownerTelegramChatId) {
         this.ownerTelegramChatId = ownerTelegramChatId;
+    }
+
+    public String getOwnerTelegramChatName() {
+        return ownerTelegramChatName;
+    }
+
+    public void setOwnerTelegramChatName(String ownerTelegramChatName) {
+        this.ownerTelegramChatName = ownerTelegramChatName;
     }
 
     public String getCreatedAt() {

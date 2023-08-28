@@ -11,6 +11,7 @@ public abstract class AbstractShoppingListRepository {
     protected static final String SHOPPING_LIST_ITEM_COL = "item";
     protected static final String SHOPPING_LIST_CATEGORY_COL = "category";
     protected static final String SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL = "ownerTelegramChatId";
+    protected static final String SHOPPING_LIST_OWNER_TELEGRAM_CHAT_NAME_COL = "ownerTelegramChatName";
     protected static final String SHOPPING_LIST_CREATEDAT_COL = "createdAt";
 
     //TODO: Change scan to normal query
@@ -31,6 +32,7 @@ public abstract class AbstractShoppingListRepository {
                 SHOPPING_LIST_ITEM_COL, AttributeValue.builder().s(shoppingListItem.getItem()).build(),
                 SHOPPING_LIST_CATEGORY_COL, AttributeValue.builder().s(shoppingListItem.getCategory()).build(),
                 SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL, AttributeValue.builder().s(shoppingListItem.getOwnerTelegramChatId()).build(),
+                SHOPPING_LIST_OWNER_TELEGRAM_CHAT_NAME_COL, AttributeValue.builder().s(shoppingListItem.getOwnerTelegramChatName()).build(),
                 SHOPPING_LIST_CREATEDAT_COL, AttributeValue.builder().s(shoppingListItem.getCreatedAt()).build()
         );
 
@@ -49,7 +51,7 @@ public abstract class AbstractShoppingListRepository {
         return GetItemRequest.builder()
                 .tableName(SHOPPING_LIST_TABLE_NAME)
                 .key(key)
-                .attributesToGet(SHOPPING_LIST_ITEM_COL, SHOPPING_LIST_CATEGORY_COL, SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL, SHOPPING_LIST_CREATEDAT_COL)
+                .attributesToGet(SHOPPING_LIST_ITEM_COL, SHOPPING_LIST_CATEGORY_COL, SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL, SHOPPING_LIST_OWNER_TELEGRAM_CHAT_NAME_COL, SHOPPING_LIST_CREATEDAT_COL)
                 .build();
     }
 

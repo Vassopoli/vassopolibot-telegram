@@ -4,6 +4,7 @@ import com.alivassopoli.adapter.dynamodb.ShoppingListItem;
 import com.alivassopoli.adapter.dynamodb.ShoppingListRepository;
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
 import com.alivassopoli.security.Policy;
+import com.alivassopoli.util.GetTelegramSenderName;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -41,7 +42,7 @@ public class ShoppingListCreator implements VassopoliService {
         streamOfItems
                 .map(String::strip)
                 .forEach(item -> {
-                    shoppingListRepository.add(new ShoppingListItem(item, "market", update.getMessage().getChatId().toString(), LocalDate.now().toString()));
+                    shoppingListRepository.add(new ShoppingListItem(item, "market", update.getMessage().getChatId().toString(), GetTelegramSenderName.execute(update.getMessage()), LocalDate.now().toString()));
 
                     telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(),
                             "Added " + item + "!");
