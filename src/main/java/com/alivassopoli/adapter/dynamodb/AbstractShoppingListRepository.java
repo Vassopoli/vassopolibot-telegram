@@ -58,7 +58,6 @@ public abstract class AbstractShoppingListRepository {
     protected DeleteItemRequest deleteRequest(final String name, String ownerTelegramChatId) {
         final Map<String, AttributeValue> key = Map.of(
                 SHOPPING_LIST_ITEM_COL, AttributeValue.builder().s(name).build(),
-                SHOPPING_LIST_CATEGORY_COL, AttributeValue.builder().s(SHOPPING_LIST_CATEGORY_MARKET_VAL).build(),
                 SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL, AttributeValue.builder().s(ownerTelegramChatId).build());
 
         return DeleteItemRequest.builder()
