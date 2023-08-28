@@ -11,15 +11,17 @@ public class ShoppingListItem {
 
     private String item;
     private String category;
+    private String ownerTelegramChatId;
     private String createdAt;
 
     public ShoppingListItem() {
 
     }
 
-    public ShoppingListItem(String item, String category, String createdAt) {
+    public ShoppingListItem(String item, String category, String ownerTelegramChatId, String createdAt) {
         this.item = item;
         this.category = category;
+        this.ownerTelegramChatId = ownerTelegramChatId;
         this.createdAt = createdAt;
     }
 
@@ -28,6 +30,7 @@ public class ShoppingListItem {
         if (item != null && !item.isEmpty()) {
             fruit.setItem(item.get(AbstractShoppingListRepository.SHOPPING_LIST_ITEM_COL).s());
             fruit.setCategory(item.get(AbstractShoppingListRepository.SHOPPING_LIST_CATEGORY_COL).s());
+            fruit.setOwnerTelegramChatId(item.get(AbstractShoppingListRepository.SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL).s());
 
             //NULLABLE
             final AttributeValue createdAt = item.get(AbstractShoppingListRepository.SHOPPING_LIST_CREATEDAT_COL);
@@ -52,6 +55,14 @@ public class ShoppingListItem {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getOwnerTelegramChatId() {
+        return ownerTelegramChatId;
+    }
+
+    public void setOwnerTelegramChatId(String ownerTelegramChatId) {
+        this.ownerTelegramChatId = ownerTelegramChatId;
     }
 
     public String getCreatedAt() {

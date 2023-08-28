@@ -41,7 +41,7 @@ public class ShoppingListCreator implements VassopoliService {
         streamOfItems
                 .map(String::strip)
                 .forEach(item -> {
-                    shoppingListRepository.add(new ShoppingListItem(item, "market", LocalDate.now().toString()));
+                    shoppingListRepository.add(new ShoppingListItem(item, "market", update.getMessage().getChatId().toString(), LocalDate.now().toString()));
 
                     telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(),
                             "Added " + item + "!");

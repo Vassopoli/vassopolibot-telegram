@@ -3,7 +3,6 @@ package com.alivassopoli.adapter.dynamodb;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
@@ -18,14 +17,14 @@ public class ShoppingListRepository extends AbstractShoppingListRepository {
         this.dynamoDB = dynamoDB;
     }
 
-    public List<ShoppingListItem> findAll() {
+    public List<ShoppingListItem> findAllByOwner(final String ownerTelegramChatId) {
 
         //TODO: QueryRequest instead of ScanRequest
 //        QueryRequest x = QueryRequest.builder()
 //                .build();
 //        dynamoDB.query(x);
 
-        return dynamoDB.scanPaginator(scanRequest()).items().stream()
+        return dynamoDB.scanPaginator(scanRequest(ownerTelegramChatId)).items().stream()
                 .map(ShoppingListItem::from)
                 .collect(Collectors.toList());
     }
@@ -34,11 +33,11 @@ public class ShoppingListRepository extends AbstractShoppingListRepository {
         return dynamoDB.putItem(putRequest(fruit));
     }
 
-    public ShoppingListItem get(String name) {
-        return ShoppingListItem.from(dynamoDB.getItem(getRequest(name)).item());
+    public ShoppingListItem get(String name, String ownerTelegramChatId) {
+        return ShoppingListItem.from(dynamoDB.getItem(getRequest(name, ownerTelegramChatId)).item());
     }
 
-    public DeleteItemResponse delete(String name) {
-        return dynamoDB.deleteItem(deleteRequest(name));
+    public DeleteItemResponse delete(String name, String ownerTelegramChatId) {
+        return dynamoDB.deleteItem(deleteRequest(name, ownerTelegramChatId));
     }
 }

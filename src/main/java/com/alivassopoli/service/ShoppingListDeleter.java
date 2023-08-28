@@ -34,7 +34,7 @@ public class ShoppingListDeleter implements VassopoliService {
     @Override
     public void execute(Update update) {
         final String messageSanitized = update.getMessage().getText().toLowerCase().replace("market delete ", "").replace("market remove ", "").strip();
-        final DeleteItemResponse deleteItemResponse = shoppingListRepository.delete(messageSanitized);
+        final DeleteItemResponse deleteItemResponse = shoppingListRepository.delete(messageSanitized, update.getMessage().getChatId().toString());
         Log.infof("deleteItemResponse: %s", deleteItemResponse);
 
         final String message;

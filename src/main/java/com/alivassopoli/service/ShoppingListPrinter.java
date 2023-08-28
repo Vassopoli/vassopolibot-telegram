@@ -51,7 +51,7 @@ public class ShoppingListPrinter implements VassopoliService {
     @Override
     public void execute(final Update update) {
         LOG.info("ShoppingListPrinter - execute");
-        final List<ShoppingListItem> shoppingList = shoppingListRepository.findAll();
+        final List<ShoppingListItem> shoppingList = shoppingListRepository.findAllByOwner(update.getMessage().getChatId().toString());
 
         final Comparator<ShoppingListItem> compareByCreatedAt = Comparator.comparing(x -> LocalDate.parse(x.getCreatedAt()));
 

@@ -37,7 +37,7 @@ public class ShoppingListReader implements VassopoliService {
 
     @Override
     public void execute(final Update update) {
-        final List<ShoppingListItem> shoppingList = shoppingListRepository.findAll();
+        final List<ShoppingListItem> shoppingList = shoppingListRepository.findAllByOwner(update.getMessage().getChatId().toString());
 
         final Comparator<ShoppingListItem> compareByCreatedAt = Comparator.comparing(x -> LocalDate.parse(x.getCreatedAt()));
 
