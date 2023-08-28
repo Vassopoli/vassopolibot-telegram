@@ -42,7 +42,7 @@ public class ShoppingListCreator implements VassopoliService {
         streamOfItems
                 .map(String::strip)
                 .forEach(item -> {
-                    shoppingListRepository.add(new ShoppingListItem(item, "market", update.getMessage().getChatId().toString(), GetTelegramSenderName.execute(update.getMessage()), LocalDate.now().toString()));
+                    shoppingListRepository.add(new ShoppingListItem(item, update.getMessage().getChatId().toString(), update.getMessage().getChatId().toString(), GetTelegramSenderName.execute(update.getMessage()), LocalDate.now().toString()));  //TODO: change category name creating new table, because it's a primary key
 
                     telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(),
                             "Added " + item + "!");

@@ -7,7 +7,7 @@ import java.util.Map;
 public abstract class AbstractShoppingListRepository {
 
     private static final String SHOPPING_LIST_TABLE_NAME = "shopping-list";
-    protected static final String SHOPPING_LIST_CATEGORY_MARKET_VAL = "market";
+    protected static final String SHOPPING_LIST_CATEGORY_MARKET_VAL = "market";  //TODO: create a new field for category, that it's not a primary key
     protected static final String SHOPPING_LIST_ITEM_COL = "item";
     protected static final String SHOPPING_LIST_CATEGORY_COL = "category";
     protected static final String SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL = "ownerTelegramChatId";
@@ -17,12 +17,12 @@ public abstract class AbstractShoppingListRepository {
     //TODO: Change scan to normal query
     protected ScanRequest scanRequest(String ownerTelegramChatId) {
         final Map<String, AttributeValue> expressionAttributeValues =
-                Map.of(":category", AttributeValue.builder().s(SHOPPING_LIST_CATEGORY_MARKET_VAL).build(),
+                Map.of(":category", AttributeValue.builder().s(ownerTelegramChatId).build(), //TODO: change category name creating new table, because it's a primary key
                         ":ownerTelegramChatId", AttributeValue.builder().s(ownerTelegramChatId).build());
 
         return ScanRequest.builder()
                 .tableName(SHOPPING_LIST_TABLE_NAME)
-                .filterExpression("category = :category AND ownerTelegramChatId = :ownerTelegramChatId")
+                .filterExpression("category = :category AND ownerTelegramChatId = :ownerTelegramChatId") //TODO: change category name creating new table, because it's a primary key
                 .expressionAttributeValues(expressionAttributeValues)
                 .build();
     }
@@ -45,7 +45,7 @@ public abstract class AbstractShoppingListRepository {
     protected GetItemRequest getRequest(final String name, String ownerTelegramChatId) {
         final Map<String, AttributeValue> key = Map.of(
                 SHOPPING_LIST_ITEM_COL, AttributeValue.builder().s(name).build(),
-                SHOPPING_LIST_CATEGORY_COL, AttributeValue.builder().s(SHOPPING_LIST_CATEGORY_MARKET_VAL).build(),
+                SHOPPING_LIST_CATEGORY_COL, AttributeValue.builder().s(ownerTelegramChatId).build(), //TODO: change category name creating new table, because it's a primary key
                 SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL, AttributeValue.builder().s(ownerTelegramChatId).build());
 
         return GetItemRequest.builder()
@@ -58,7 +58,7 @@ public abstract class AbstractShoppingListRepository {
     protected DeleteItemRequest deleteRequest(final String name, String ownerTelegramChatId) {
         final Map<String, AttributeValue> key = Map.of(
                 SHOPPING_LIST_ITEM_COL, AttributeValue.builder().s(name).build(),
-                SHOPPING_LIST_OWNER_TELEGRAM_CHAT_ID_COL, AttributeValue.builder().s(ownerTelegramChatId).build());
+                SHOPPING_LIST_CATEGORY_COL, AttributeValue.builder().s(ownerTelegramChatId).build());
 
         return DeleteItemRequest.builder()
                 .tableName(SHOPPING_LIST_TABLE_NAME)
