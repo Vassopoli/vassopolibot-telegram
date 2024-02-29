@@ -15,8 +15,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+
+    - name: Load secret
+      uses: 1password/load-secrets-action@v1
+      with:
+        export-env: true
+      env:
+        OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+        AWS_ROLE_TO_ASSUME: op://Service Account Vault/IAM Role DeployVassopoliTelegramBotToLambda/credential
+        APP_BASE_URL: op://Service Account Vault/VassopoliBot Webhook/hostname
+
     - name: Add mask
-      run: echo "::add-mask::${{ secrets.APP_BASE_URL }}"
+      run: echo "::add-mask::${{ env.APP_BASE_URL }}"
 
     - uses: actions/checkout@v3
     
@@ -41,7 +51,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
         aws-region: us-east-1
 
     - name: Setup AWS SAM CLI
