@@ -3,7 +3,9 @@ package com.alivassopoli.service;
 import com.alivassopoli.adapter.telegram.TelegramMessageCommandSender;
 import com.alivassopoli.security.Policy;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -18,6 +20,7 @@ import java.util.List;
 @ApplicationScoped
 public class LlmService implements VassopoliService {
 
+    private static final Logger LOG = Logger.getLogger(LlmService.class);
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
 
     private final TelegramMessageCommandSender telegramMessageCommandSender;
@@ -63,13 +66,30 @@ public class LlmService implements VassopoliService {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("Gemini response: " + response.body());
+            LOG.infof("Gemini response status code: %d", response.statusCode());
+            LOG.info("Gemini response: " + response.body());
 
-            JSONObject responseBody = new JSONObject(response.body());
-            String textResponse = responseBody.getJSONArray("candidates").getJSONObject(0).getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text");
+            if (response.statusCode() != 200) {
+                telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), "Error from Gemini API. Status code: " + response.statusCode());
+                return;
+            }
 
-            telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), textResponse);
+            try {
+                JSONObject responseBody = new JSONObject(response.body());
+                if (responseBody.has("candidates")) {
+                    String textResponse = responseBody.getJSONArray("candidates").getJSONObject(0).getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text");
+                    telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), textResponse);
+                } else {
+                    LOG.error("Gemini response does not contain 'candidates' field.");
+                    telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), "Error: Could not parse Gemini response.");
+                }
+            } catch (JSONException e) {
+                LOG.error("Error parsing Gemini response JSON", e);
+                telegramMessageCommandSender.executeSend(update.getMessage().getMessageId(), update.getMessage().getChatId().toString(), "Error: Could not parse Gemini response.");
+            }
+
         } catch (IOException | InterruptedException e) {
+            LOG.error("Error sending request to Gemini API", e);
             throw new RuntimeException(e);
         }
     }
