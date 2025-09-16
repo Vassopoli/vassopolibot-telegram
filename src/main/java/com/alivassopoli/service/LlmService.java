@@ -21,7 +21,7 @@ import java.util.List;
 public class LlmService implements VassopoliService {
 
     private static final Logger LOG = Logger.getLogger(LlmService.class);
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
+    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
 
     private final TelegramMessageCommandSender telegramMessageCommandSender;
 
