@@ -63,6 +63,8 @@ public class LlmService implements VassopoliService {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            System.out.println("Gemini response: " + response.body());
+
             JSONObject responseBody = new JSONObject(response.body());
             String textResponse = responseBody.getJSONArray("candidates").getJSONObject(0).getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text");
 
