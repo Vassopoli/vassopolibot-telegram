@@ -55,4 +55,8 @@ public class CommandParser {
                 LOG.infof("%s of role %s not allowed to execute service %s of %s policy", update.getMessage().getFrom().getUserName(), role, vassopoliService.getClass().getSimpleName(), vassopoliService.getRequiredPolicy());
             }
     }
+
+    public void clearCache() {
+        invocationCache.clear();
+    }
 }
