@@ -23,7 +23,7 @@ public class UserAuthenticator {
     public Role getChatRole(Long chatID) {
         //TODO: Get roles from a database
         final Map<Long, Role> idToRole = Map.of(
-                vassopoliID, Role.ADMIN,
+                vassopoliID, Role.VASSOPOLI,
                 vassopoliBackupID, Role.USER,
                 aptoID, Role.USER
         );
