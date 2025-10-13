@@ -1,6 +1,9 @@
 package com.alivassopoli.adapter.resources;
 
+import com.alivassopoli.CommandParser;
+import com.alivassopoli.adapter.resources.dto.ExecuteRequest;
 import com.alivassopoli.adapter.telegram.VassopoliBotTelegramWebhook;
+import com.alivassopoli.security.Role;
 import com.alivassopoli.configuration.MyURLs;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,11 +33,14 @@ public class TelegramBotResource {
 
     private final String url;
     private final VassopoliBotTelegramWebhook vassopoliBotTelegramWebHook;
+    private final CommandParser commandParser;
 
     public TelegramBotResource(@ConfigProperty(name = "vassopolibot-telegram-webhook.base-url") final String baseUrl,
-                               final VassopoliBotTelegramWebhook vassopoliBotTelegramWebHook) {
+                               final VassopoliBotTelegramWebhook vassopoliBotTelegramWebHook,
+                               final CommandParser commandParser) {
         this.url = baseUrl + "/telegram-bot";
         this.vassopoliBotTelegramWebHook = vassopoliBotTelegramWebHook;
+        this.commandParser = commandParser;
     }
 
     @GET
@@ -102,5 +108,14 @@ public class TelegramBotResource {
     public BotApiMethod<?> onUpdateReceived(final String updateJsonString) throws JsonProcessingException {
         final Update update = objectMapper.readValue(updateJsonString, Update.class);
         return vassopoliBotTelegramWebHook.onWebhookUpdateReceived(update);
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/execute")
+    public Response execute(final ExecuteRequest request) {
+        commandParser.execute(request.update, request.role);
+        return Response.ok().build();
     }
 }
