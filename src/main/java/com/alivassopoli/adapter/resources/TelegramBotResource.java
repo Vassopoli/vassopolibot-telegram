@@ -1,7 +1,7 @@
 package com.alivassopoli.adapter.resources;
 
 import com.alivassopoli.CommandParser;
-import com.alivassopoli.adapter.resources.dto.ExecuteRequest;
+import com.alivassopoli.adapter.resources.dto.TextCommandRequest;
 import com.alivassopoli.adapter.telegram.VassopoliBotTelegramWebhook;
 import com.alivassopoli.security.Role;
 import com.alivassopoli.configuration.MyURLs;
@@ -14,7 +14,10 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.GetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
+import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -113,9 +116,22 @@ public class TelegramBotResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/execute")
-    public Response execute(final ExecuteRequest request) {
-        commandParser.execute(request.update, request.role);
+    @Path("/text-command")
+    public Response executeTextCommand(final TextCommandRequest request) {
+        final Update update = new Update();
+        final Message messageObj = new Message();
+        final Chat chat = new Chat();
+        final User user = new User();
+
+        user.setUserName(request.username);
+        chat.setId(request.id);
+        messageObj.setChat(chat);
+        messageObj.setFrom(user);
+        messageObj.setMessageId(456);
+        messageObj.setText(request.text);
+        update.setMessage(messageObj);
+
+        commandParser.execute(update, Role.ADMIN);
         return Response.ok().build();
     }
 }
